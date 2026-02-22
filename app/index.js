@@ -7,7 +7,7 @@ import StepWeight from '../components/steps/StepWeight';
 import StepDays from '../components/steps/StepDays';
 import StepActivityLevel from '../components/steps/StepActivityLevel';
 import StepDetourLevel from '../components/steps/StepDetourLevel';
-
+import DevSkipButton from '../components/DevSkipButton';
 
 export default function SetupScreen() {
   const [step, setStep] = useState(0);
@@ -24,6 +24,12 @@ export default function SetupScreen() {
   const handleComplete = () => {
   router.push('/home');
   };
+  // developer mode
+  const handleDevSkip = (devData) => {
+    setUserData(devData);
+    router.push('/home');
+  };
+
 
   const next = () => setStep(s => s + 1);
   const back = () => setStep(s => s - 1);
@@ -52,5 +58,10 @@ export default function SetupScreen() {
     />
   ];
 
-  return steps[step];
+  return (
+    <>
+      {steps[step]}
+      <DevSkipButton onSkip={handleDevSkip} />
+    </>
+  );
 }
