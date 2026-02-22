@@ -16,3 +16,14 @@ export function calcDailyEnergy(bmr, activityLevel) {
 export function calcDailyDeficit(currentWeight, targetWeight, days) {
   return (currentWeight - targetWeight) * 7000 / days;
 }
+
+// 一日の目標摂取カロリー
+export function calcDailyTarget(dailyEnergy, dailyDeficit, detourWeight) {
+  const foodWeight = 1.0 - detourWeight;
+  return dailyEnergy - dailyDeficit * foodWeight;
+}
+
+// 消費カロリー（歩行）
+export function calcBurnedCalories(mets, hours, weight) {
+  return 1.05 * mets * hours * weight;
+}
