@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import StepGender from '../components/steps/StepGender';
 import StepAge from '../components/steps/StepAge';
-// ...他のステップも同様にimport
+import StepHeight from '../components/steps/StepHeight';
+import StepWeight from '../components/steps/StepWeight';
+import StepDays from '../components/steps/StepDays';
+import StepActivityLevel from '../components/steps/StepActivityLevel';
+import StepDetourLevel from '../components/steps/StepDetourLevel';
+
 
 export default function SetupScreen() {
   const [step, setStep] = useState(0);
@@ -23,7 +28,18 @@ export default function SetupScreen() {
   const steps = [
     <StepGender value={userData.gender} onSelect={v => update('gender', v)} onNext={next} />,
     <StepAge value={userData.age} onChange={v => update('age', v)} onNext={next} onBack={back} />,
-    // ...
+    <StepHeight value={userData.height} onChange={v => update('height', v)} onNext={next} onBack={back} />,
+    <StepWeight
+      weight={userData.weight}
+      targetWeight={userData.targetWeight}
+      onChangeWeight={v => update('weight', v)}
+      onChangeTarget={v => update('targetWeight', v)}
+      onNext={next}
+      onBack={back}
+    />,
+    <StepDays value={userData.days} onChange={v => update('days', v)} onNext={next} onBack={back} />,
+    <StepActivityLevel value={userData.activityLevel} onSelect={v => update('activityLevel', v)} onNext={next} onBack={back} />,
+    <StepDetourLevel value={userData.detourLevel} onSelect={v => update('detourLevel', v)} onNext={next} onBack={back} />,
   ];
 
   return steps[step];

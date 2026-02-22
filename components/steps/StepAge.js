@@ -1,4 +1,5 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { stepStyles as styles } from '../../constants/styles';
 
 export default function StepAge({ value, onChange, onNext, onBack }) {
   return (
@@ -13,7 +14,7 @@ export default function StepAge({ value, onChange, onNext, onBack }) {
         placeholder="例：25"
       />
 
-      <View style={styles.button}>
+      <View style={[styles.button, {gap:32}]}>
         <TouchableOpacity onPress={onBack} style={{ marginLeft:10, marginTop:32 }}>
           <Text>← 戻る</Text>
         </TouchableOpacity>
@@ -28,12 +29,3 @@ export default function StepAge({ value, onChange, onNext, onBack }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 },
-  title: { fontSize: 20, marginBottom: 24 },
-  option: { padding: 16, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, width: 200, alignItems: 'center' },
-  selected: { backgroundColor: '#4CAF50', borderColor: '#4CAF50' },
-  nextButton: { marginTop: 32, padding: 16, backgroundColor: '#4CAF50', borderRadius: 8 },
-  disabled: { backgroundColor: '#ccc' }
-});
