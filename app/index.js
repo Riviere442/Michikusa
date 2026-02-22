@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { router } from 'expo-router';
 import StepGender from '../components/steps/StepGender';
 import StepAge from '../components/steps/StepAge';
 import StepHeight from '../components/steps/StepHeight';
@@ -20,6 +21,9 @@ export default function SetupScreen() {
     activityLevel: null,
     detourLevel: null,
   });
+  const handleComplete = () => {
+  router.push('/home');
+  };
 
   const next = () => setStep(s => s + 1);
   const back = () => setStep(s => s - 1);
@@ -40,6 +44,12 @@ export default function SetupScreen() {
     <StepDays value={userData.days} onChange={v => update('days', v)} onNext={next} onBack={back} />,
     <StepActivityLevel value={userData.activityLevel} onSelect={v => update('activityLevel', v)} onNext={next} onBack={back} />,
     <StepDetourLevel value={userData.detourLevel} onSelect={v => update('detourLevel', v)} onNext={next} onBack={back} />,
+    <StepDetourLevel
+      value={userData.detourLevel}
+      onSelect={v => update('detourLevel', v)}
+      onNext={handleComplete}  // ← nextからhandleCompleteに変更
+      onBack={back}
+    />
   ];
 
   return steps[step];

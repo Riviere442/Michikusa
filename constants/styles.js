@@ -11,7 +11,7 @@ export const stepStyles = StyleSheet.create({
   optionLabel: { fontSize: 16, fontWeight: 'bold' },
   optionDesc: { fontSize: 12, color: '#888' },
   selected: { backgroundColor: '#4CAF50', borderColor: '#4CAF50' },
-  buttons: { flexDirection: 'row', gap: 24, marginTop: 32 },
+  buttons: { flexDirection: 'row', alignItems: 'center', gap: 24, marginTop: 32 },
   nextButton: { padding: 16, backgroundColor: '#4CAF50', borderRadius: 8 },
   disabled: { backgroundColor: '#ccc' },
 });
