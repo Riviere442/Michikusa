@@ -57,7 +57,8 @@ export default function CameraScreen() {
         setLoading(false);
       });
     } catch (e) {
-      alert('解析に失敗しました。もう一度試してください。');
+      console.error('解析エラー詳細:', e);
+      alert(`解析に失敗しました\n\n原因：${e.message}`);
       setLoading(false);
     }
   };
