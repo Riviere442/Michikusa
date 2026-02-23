@@ -28,8 +28,11 @@ export async function signInWithOAuth(
   provider: 'google' | 'facebook' | 'github' | 'azure',
   redirectTo?: string
 ) {
-  const options = redirectTo ? { redirectTo } : undefined;
-  return await supabase.auth.signInWithOAuth({ provider }, options);
+  const options: any = { provider };
+  if (redirectTo) {
+    options.redirectTo = redirectTo;
+  }
+  return await supabase.auth.signInWithOAuth(options);
 }
 
 export async function signOut() {
