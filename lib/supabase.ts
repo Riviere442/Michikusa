@@ -14,3 +14,37 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false,
   },
 });
+
+// --- Authentication helpers ---
+export async function signUp(email: string, password: string) {
+  return await supabase.auth.signUp({ email, password });
+}
+
+export async function signIn(email: string, password: string) {
+  return await supabase.auth.signInWithPassword({ email, password });
+}
+
+export async function signInWithOAuth(
+  provider: 'google' | 'facebook' | 'github' | 'azure',
+  redirectTo?: string
+) {
+  const options = redirectTo ? { redirectTo } : undefined;
+  return await supabase.auth.signInWithOAuth({ provider }, options);
+}
+
+export async function signOut() {
+  return await supabase.auth.signOut();
+}
+
+export async function getUser() {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) return { user: null, error };
+  return { user: data.user, error: null };
+}
+
+export function onAuthStateChange(callback: (event: string, session: any) => void) {
+  const { data: subscription } = supabase.auth.onAuthStateChange((event, session) => {
+    callback(event, session);
+  });
+  return subscription;
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import StepGender from '../components/steps/StepGender';
 import StepAge from '../components/steps/StepAge';
@@ -10,6 +10,10 @@ import StepDetourLevel from '../components/steps/StepDetourLevel';
 import DevSkipButton from '../components/DevSkipButton';
 
 export default function SetupScreen() {
+  useEffect(() => {
+    // 開発用: 起動時にログイン画面へリダイレクト（テスト後は削除可）
+    router.replace('/login');
+  }, []);
   const [step, setStep] = useState(0);
   const [userData, setUserData] = useState({
     gender: null,
