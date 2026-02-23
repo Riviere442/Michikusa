@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { calcBMR, calcDailyEnergy, calcDailyDeficit, calcDailyTarget } from '../utils/calorieCalc';
+import DevSkipButton from '../components/DevSkipButton';
 
 // 仮データ（後でAsyncStorageやContextに置き換える）
 const USER = {
@@ -20,7 +21,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-
+      <DevSkipButton showMapSkip={true} />
       {/* 今日の目標 */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>今日の目標摂取カロリー</Text>
