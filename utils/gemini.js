@@ -1,9 +1,21 @@
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+import * as ImageManipulator from 'expo-image-manipulator';
+
+// 画像を圧縮するヘルパー
+async function compressImage(imageUri) {
+  const result = await ImageManipulator.manipulateAsync(
+    imageUri,
+    [{ resize: { width: 512 } }],  // 幅512pxにリサイズ
+    { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }  // 品質70%
+  );
+  return result.uri;
+}
 
 export async function analyzeCalories(imageUri) {
   try {
-    const response = await fetch(imageUri);
+    const compressedUri = await compressImage(imageUri);
+    const response = await fetch(compressedUri);
     const blob = await response.blob();
     const base64 = await blobToBase64(blob);
     const base64Data = base64.split(',')[1];
