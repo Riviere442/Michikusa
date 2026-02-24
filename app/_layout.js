@@ -2,6 +2,7 @@ import { Slot, router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { onAuthStateChange } from '../lib/supabase';
+import { UserProvider } from '../contexts/UserContext';
 
 export default function RootLayout() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -52,8 +53,10 @@ export default function RootLayout() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
-      <Slot />
-    </View>
+    <UserProvider>
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <Slot />
+      </View>
+    </UserProvider>
   );
 }

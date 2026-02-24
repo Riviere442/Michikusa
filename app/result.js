@@ -82,4 +82,3 @@ const styles = StyleSheet.create({
   },
   homeButtonText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
 });
-r
