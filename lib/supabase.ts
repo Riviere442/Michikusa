@@ -24,16 +24,6 @@ export async function signIn(email: string, password: string) {
   return await supabase.auth.signInWithPassword({ email, password });
 }
 
-export async function signInWithOAuth(
-  provider: 'google' | 'facebook' | 'github' | 'azure',
-  redirectTo?: string
-) {
-  const options: any = { provider };
-  if (redirectTo) {
-    options.redirectTo = redirectTo;
-  }
-  return await supabase.auth.signInWithOAuth(options);
-}
 
 export async function signOut() {
   return await supabase.auth.signOut();

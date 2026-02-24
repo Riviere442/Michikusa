@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import * as Linking from 'expo-linking';
-import { signIn, signUp, signInWithOAuth, onAuthStateChange, getUser, signOut } from '../lib/supabase';
+import { signIn, signUp, onAuthStateChange } from '../lib/supabase';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -24,13 +23,12 @@ export default function LoginScreen() {
     try {
       const res = await signIn(email, password);
       if (res.error) {
-        Alert.alert('Sign in error', res.error.message || String(res.error));
+        Alert.alert('ログインエラー', 'メールアドレスまたはパスワードが正しくありません');
       } else {
-        // ナビゲートしてからアラート表示
         router.replace('/home');
       }
     } catch (e) {
-      Alert.alert('Error', String(e));
+      Alert.alert('エラー', '予期しないエラーが発生しました。もう一度お試しください。');
     } finally {
       setLoading(false);
     }
@@ -53,16 +51,14 @@ export default function LoginScreen() {
 
       const res = await signUp(email, password);
       if (res.error) {
-        const errorMsg = res.error.message || String(res.error);
-        Alert.alert('Sign up error', errorMsg);
+        Alert.alert('新規登録エラー', 'アカウントの作成に失敗しました。入力内容を確認してください。');
       } else {
         // サインアップ成功後、自動でサインインを試みる
         const signInRes = await signIn(email, password);
         if (signInRes.error) {
-          const errorMsg = signInRes.error.message || String(signInRes.error);
           Alert.alert(
-            'Sign up successful, but auto sign-in failed',
-            'Error: ' + errorMsg + '\n\nメール確認が必須の場合、Supabaseダッシュボードで設定を変更してください。'
+            '登録完了',
+            'アカウントの登録は完了しましたが、自動ログインに失敗しました。ログイン画面からもう一度お試しください。'
           );
         } else {
           // 自動サインイン成功 → ホーム画面へ（RootLayoutが自動で処理）
@@ -70,39 +66,21 @@ export default function LoginScreen() {
         }
       }
     } catch (e) {
-      Alert.alert('Error', String(e));
+      Alert.alert('エラー', '予期しないエラーが発生しました。もう一度お試しください。');
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleOAuth(provider) {
-    setLoading(true);
-    try {
-      const redirectUrl = Linking.createURL('/auth/callback');
-      const res = await signInWithOAuth(provider, redirectUrl);
-      if (res.error) {
-        Alert.alert('OAuth error', res.error.message || String(res.error));
-      } else if (res.data?.url) {
-        // Supabaseが返す認証URLを開く（ブラウザで認可フロー開始）
-        const url = res.data.url;
-        Linking.openURL(url);
-      } else {
-        Alert.alert('Info', '認証フローを開始しました');
-      }
-    } catch (e) {
-      Alert.alert('Error', String(e));
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <View style={styles.container}>
+      <Text style={styles.appName}>Michikusa</Text>
       <Text style={styles.title}>ログイン</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="メールアドレス"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -112,7 +90,7 @@ export default function LoginScreen() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder="パスワード"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -130,36 +108,32 @@ export default function LoginScreen() {
         <ActivityIndicator />
       ) : (
         <View style={styles.buttons}>
-          <Button title="Sign In" onPress={handleSignIn} />
+          <View style={{ alignItems: 'center' }}>
+            <TouchableOpacity style={styles.textBtn} onPress={handleSignIn}>
+              <Text style={styles.textBtnLabel}>ログイン</Text>
+            </TouchableOpacity>
+          </View>
           <View style={{ height: 8 }} />
-          <Button title="Sign Up" onPress={handleSignUp} />
+          <View style={{ alignItems: 'center' }}>
+            <TouchableOpacity style={styles.textBtn} onPress={handleSignUp}>
+              <Text style={styles.textBtnLabel}>新規登録</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
-      <Text style={styles.or}>または</Text>
-
-      <View style={styles.oauthRow}>
-        <TouchableOpacity 
-          style={[styles.oauthBtn, styles.googleBtn]} 
-          onPress={() => handleOAuth('google')}
-          disabled={loading}
-        >
-          <Text style={[styles.oauthText, styles.googleText]}>🔵 Google でサインイン</Text>
-        </TouchableOpacity>
-      </View>
     </View>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, justifyContent: 'center', backgroundColor: '#ffffff' },
+  appName: { fontSize: 36, fontWeight: '800', textAlign: 'center', marginBottom: 8, color: '#333' },
   title: { fontSize: 24, fontWeight: '700', marginBottom: 16, textAlign: 'center' },
   input: { borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 6, marginBottom: 8 },
   buttons: { marginTop: 8 },
-  or: { textAlign: 'center', marginVertical: 12, color: '#666' },
-  oauthRow: { alignItems: 'center', width: '100%' },
-  oauthBtn: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd', paddingVertical: 12, paddingHorizontal: 20, borderRadius: 8, marginBottom: 8, width: '100%', alignItems: 'center' },
-  googleBtn: { backgroundColor: '#4285F4', borderColor: '#4285F4' },
-  oauthText: { color: '#333', fontSize: 16, fontWeight: '600' },
-  googleText: { color: '#fff' },
+  textBtn: { paddingVertical: 10, paddingHorizontal: 20 },
+  textBtnLabel: { fontSize: 16, fontWeight: '600', color: '#2196F3', textAlign: 'center' },
+
 });
