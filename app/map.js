@@ -1,15 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import MapView, { Polyline, Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import { calcDistance } from '../utils/spots';
 import { calcBurnedCalories } from '../utils/calorieCalc';
+import { fetchRouteCoordinates } from '../utils/routes';
+import { useUser } from '../contexts/UserContext';
+import { DEV_DATA } from '../components/DevSkipButton';
 
 const METS_WALKING = 3.5;
-const USER_WEIGHT = 70; // 仮（後でContextから取得）
 
 export default function MapScreen() {
+  const { userData } = useUser();
+  const u = userData.gender ? userData : DEV_DATA;
+  const userWeight = parseFloat(u.weight);
+
   const params = useLocalSearchParams();
   const destLat = parseFloat(params.destLat);
   const destLng = parseFloat(params.destLng);
@@ -17,7 +23,9 @@ export default function MapScreen() {
   const spots = params.spots ? JSON.parse(params.spots) : [];
 
   const [location, setLocation] = useState(null);
-  const [selectedSpot, setSelectedSpot] = useState(null); // 選択された経由地
+  const [selectedSpot, setSelectedSpot] = useState(null);
+  const [plannedRoute, setPlannedRoute] = useState([]);
+  const [routeLoading, setRouteLoading] = useState(false);
   const [routeCoords, setRouteCoords] = useState([]);
   const [tracking, setTracking] = useState(false);
   const [totalDistance, setTotalDistance] = useState(0);
@@ -25,6 +33,7 @@ export default function MapScreen() {
   const watchRef = useRef(null);
   const mapRef = useRef(null);
 
+  // 現在地取得
   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -33,6 +42,56 @@ export default function MapScreen() {
       setLocation(current.coords);
     })();
   }, []);
+
+  // ルート選択後に Routes API で道路ベースのルートを取得
+  useEffect(() => {
+    if (!location || !selectedSpot) return;
+
+    const loadRoute = async () => {
+      setRouteLoading(true);
+      setPlannedRoute([]);
+      try {
+        const origin = { latitude: location.latitude, longitude: location.longitude };
+        const destination = { latitude: destLat, longitude: destLng };
+        const intermediates = selectedSpot.skip
+          ? []
+          : [{ latitude: selectedSpot.lat, longitude: selectedSpot.lng }];
+
+        const coords = await fetchRouteCoordinates(origin, destination, intermediates);
+        setPlannedRoute(coords);
+
+        if (coords.length > 0 && mapRef.current) {
+          mapRef.current.fitToCoordinates(coords, {
+            edgePadding: { top: 80, right: 60, bottom: 220, left: 60 },
+            animated: true,
+          });
+        }
+      } catch (e) {
+        console.error('ルート取得エラー:', e);
+        const fallback = selectedSpot.skip
+          ? [
+              { latitude: location.latitude, longitude: location.longitude },
+              { latitude: destLat, longitude: destLng },
+            ]
+          : [
+              { latitude: location.latitude, longitude: location.longitude },
+              { latitude: selectedSpot.lat, longitude: selectedSpot.lng },
+              { latitude: destLat, longitude: destLng },
+            ];
+        setPlannedRoute(fallback);
+        if (mapRef.current) {
+          mapRef.current.fitToCoordinates(fallback, {
+            edgePadding: { top: 80, right: 60, bottom: 220, left: 60 },
+            animated: true,
+          });
+        }
+      } finally {
+        setRouteLoading(false);
+      }
+    };
+
+    loadRoute();
+  }, [location, selectedSpot, destLat, destLng]);
 
   const startTracking = async () => {
     setTracking(true);
@@ -50,9 +109,8 @@ export default function MapScreen() {
             const dist = calcDistance(last.latitude, last.longitude, latitude, longitude);
             setTotalDistance(d => {
               const newDist = d + dist;
-              // 消費カロリーを更新（距離→時間→カロリー）
               const hours = (newDist / 1000) / 4;
-              setBurnedCalories(Math.round(calcBurnedCalories(METS_WALKING, hours, USER_WEIGHT)));
+              setBurnedCalories(Math.round(calcBurnedCalories(METS_WALKING, hours, userWeight)));
               return newDist;
             });
           }
@@ -69,6 +127,16 @@ export default function MapScreen() {
   const stopTracking = () => {
     watchRef.current?.remove();
     setTracking(false);
+
+    router.push({
+      pathname: '/result',
+      params: {
+        totalDistance: totalDistance.toString(),
+        burnedCalories: burnedCalories.toString(),
+        destName: destName || '',
+        waypointName: selectedSpot && !selectedSpot.skip ? selectedSpot.name : '',
+      },
+    });
   };
 
   if (!location) {
@@ -110,7 +178,6 @@ export default function MapScreen() {
           )}
         </ScrollView>
 
-        {/* 候補なしでも目的地へ直接進めるボタン */}
         <TouchableOpacity
           style={styles.skipButton}
           onPress={() => setSelectedSpot({ name: destName, lat: destLat, lng: destLng, skip: true })}
@@ -134,10 +201,8 @@ export default function MapScreen() {
           longitudeDelta: 0.01,
         }}
       >
-        {/* 現在地 */}
         <Marker coordinate={location} title="現在地" pinColor="blue" />
 
-        {/* 経由地（寄り道スポット） */}
         {!selectedSpot.skip && (
           <Marker
             coordinate={{ latitude: selectedSpot.lat, longitude: selectedSpot.lng }}
@@ -146,20 +211,41 @@ export default function MapScreen() {
           />
         )}
 
-        {/* 目的地 */}
         <Marker
           coordinate={{ latitude: destLat, longitude: destLng }}
           title={destName}
           pinColor="red"
         />
 
-        {/* 移動ルート */}
+        {plannedRoute.length > 1 && !tracking && (
+          <Polyline
+            coordinates={plannedRoute}
+            strokeColor="#90CAF9"
+            strokeWidth={5}
+            lineDashPattern={[8, 6]}
+          />
+        )}
+
+        {tracking && plannedRoute.length > 1 && (
+          <Polyline
+            coordinates={plannedRoute}
+            strokeColor="rgba(144,202,249,0.4)"
+            strokeWidth={4}
+            lineDashPattern={[8, 6]}
+          />
+        )}
         {routeCoords.length > 1 && (
           <Polyline coordinates={routeCoords} strokeColor="#4CAF50" strokeWidth={4} />
         )}
       </MapView>
 
-      {/* 情報パネル */}
+      {routeLoading && (
+        <View style={styles.routeLoadingOverlay}>
+          <ActivityIndicator size="large" color="#4CAF50" />
+          <Text style={{ color: '#333', marginTop: 8 }}>ルートを取得中...</Text>
+        </View>
+      )}
+
       <View style={styles.panel}>
         {!selectedSpot.skip && (
           <Text style={styles.waypointText}>経由地：{selectedSpot.name}</Text>
@@ -210,4 +296,9 @@ const styles = StyleSheet.create({
   trackButton: { backgroundColor: '#4CAF50', padding: 16, borderRadius: 12, width: 240, alignItems: 'center', marginTop: 8 },
   stopButton: { backgroundColor: '#FF5722' },
   trackButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
+  routeLoadingOverlay: {
+    position: 'absolute', top: '45%', alignSelf: 'center',
+    backgroundColor: 'rgba(255,255,255,0.9)', padding: 24,
+    borderRadius: 16, alignItems: 'center',
+  },
 });

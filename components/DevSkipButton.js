@@ -3,13 +3,14 @@ import { router } from 'expo-router';
 
 const DEV_MODE = true;
 
-const DEV_DATA = {
+// 175cm, 67.4kg の標準的な男性、1か月で体重の約3~5%ダイエット（約2~3.4kg）
+export const DEV_DATA = {
   gender: '男性',
   age: '25',
-  height: '170',
-  weight: '70',
-  targetWeight: '65',
-  days: '90',
+  height: '175',
+  weight: '67.4',
+  targetWeight: '64.4',   // 約3kg減 ≒ 4.5%
+  days: '30',
   activityLevel: 1.5,
   detourLevel: 0.5,
 };
@@ -18,21 +19,13 @@ export default function DevSkipButton({ onSkip, showMapSkip = false }) {
   if (!DEV_MODE) return null;
 
   return (
-    <View style={{ position: 'absolute', top: 60, right: 16, gap: 8 }}>
+    <View style={{ position: 'absolute', top: 60, right: 16, zIndex: 100, gap: 8 }}>
       {onSkip && (
         <TouchableOpacity
           onPress={() => onSkip(DEV_DATA)}
           style={styles.button}
         >
           <Text style={styles.text}>DEV SKIP</Text>
-        </TouchableOpacity>
-      )}
-      {showMapSkip && (
-        <TouchableOpacity
-          onPress={() => router.push('/map')}
-          style={[styles.button, { backgroundColor: '#9C27B0' }]}
-        >
-          <Text style={styles.text}>→ MAP</Text>
         </TouchableOpacity>
       )}
     </View>

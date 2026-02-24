@@ -7,26 +7,35 @@ import { router } from 'expo-router';
 import axios from 'axios';
 import * as Location from 'expo-location';
 import { extractCandidateSpots, selectAndSortSpots } from '../utils/spots';
+import { useUser } from '../contexts/UserContext';
+import { DEV_DATA } from '../components/DevSkipButton';
+import { calcBMR, calcDailyEnergy, calcDailyDeficit } from '../utils/calorieCalc';
 
 const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_CLOUD_API_KEY;
 
-// 負債カロリーから目標距離を計算（仮：後でhomeから受け取る）
-const DEBT_CALORIES = 300;
-const USER_WEIGHT = 70;
-
+// 負債カロリーから目標距離を計算
 function calcTargetDistance(debtCalories, weight) {
-  // 消費カロリー = 1.05 × 3.5メッツ × 時間 × 体重
-  // 時間 = debtCalories / (1.05 × 3.5 × weight)
-  // 距離 = 時間(h) × 4km/h × 1000
   const hours = debtCalories / (1.05 * 3.5 * weight);
   return hours * 4000;
 }
 
 export default function SearchScreen() {
+  const { userData } = useUser();
+  const u = userData.gender ? userData : DEV_DATA;
+
+  const weight = parseFloat(u.weight);
+  const targetWeight = parseFloat(u.targetWeight);
+  const days = parseFloat(u.days);
+  const detourLevel = u.detourLevel;
+
+  // 実際のユーザーデータから負債カロリーを計算
+  const dailyDeficit = calcDailyDeficit(weight, targetWeight, days);
+  const debtCalories = Math.round(dailyDeficit * detourLevel);
+
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searching, setSearching] = useState(false); // スポット抽出中
+  const [searching, setSearching] = useState(false);
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -64,7 +73,6 @@ export default function SearchScreen() {
   const handleSelect = async (place) => {
     setSearching(true);
     try {
-      // 現在地を取得
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         alert('位置情報の許可が必要です');
@@ -76,20 +84,16 @@ export default function SearchScreen() {
       const destLat = place.location.latitude;
       const destLng = place.location.longitude;
 
-      // 目標距離を計算
-      const targetDistance = calcTargetDistance(DEBT_CALORIES, USER_WEIGHT);
+      const targetDistance = calcTargetDistance(debtCalories, weight);
 
-      // 候補スポットを抽出
       const candidates = await extractCandidateSpots(
         currentLat, currentLng,
         destLat, destLng,
         targetDistance
       );
 
-      // ランダムに3件選んでソート
       const spots = selectAndSortSpots(candidates, currentLat, currentLng, destLat, destLng);
 
-      // map.jsへ遷移（JSON文字列で渡す）
       router.push({
         pathname: '/map',
         params: {

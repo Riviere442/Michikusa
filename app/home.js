@@ -2,22 +2,31 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { calcBMR, calcDailyEnergy, calcDailyDeficit, calcDailyTarget } from '../utils/calorieCalc';
 import DevSkipButton from '../components/DevSkipButton';
-
-// 仮データ（後でAsyncStorageやContextに置き換える）
-const USER = {
-  gender: '男性', age: 25, height: 170,
-  weight: 70, targetWeight: 65, days: 90,
-  activityLevel: 1.5, detourLevel: 0.5,
-};
+import { DEV_DATA } from '../components/DevSkipButton';
+import { useUser } from '../contexts/UserContext';
 
 export default function HomeScreen() {
-  const bmr = calcBMR(USER.gender, USER.weight, USER.height, USER.age);
-  const dailyEnergy = calcDailyEnergy(bmr, USER.activityLevel);
-  const dailyDeficit = calcDailyDeficit(USER.weight, USER.targetWeight, USER.days);
-  const dailyTarget = calcDailyTarget(dailyEnergy, dailyDeficit, USER.detourLevel);
+  const { userData } = useUser();
 
-  // 仮の負債カロリー（後で実装）
-  const debtCalories = 200;
+  // Context にデータがなければ DEV_DATA をフォールバック
+  const u = userData.gender ? userData : DEV_DATA;
+
+  const gender = u.gender;
+  const age = parseFloat(u.age);
+  const height = parseFloat(u.height);
+  const weight = parseFloat(u.weight);
+  const targetWeight = parseFloat(u.targetWeight);
+  const days = parseFloat(u.days);
+  const activityLevel = u.activityLevel;
+  const detourLevel = u.detourLevel;
+
+  const bmr = calcBMR(gender, weight, height, age);
+  const dailyEnergy = calcDailyEnergy(bmr, activityLevel);
+  const dailyDeficit = calcDailyDeficit(weight, targetWeight, days);
+  const dailyTarget = calcDailyTarget(dailyEnergy, dailyDeficit, detourLevel);
+
+  // 負債カロリー = 寄り道（運動）で消費すべき分
+  const debtCalories = Math.round(dailyDeficit * detourLevel);
 
   return (
     <View style={styles.container}>
@@ -33,7 +42,7 @@ export default function HomeScreen() {
       <View style={[styles.card, debtCalories > 0 && styles.debtCard]}>
         <Text style={styles.cardTitle}>運動負債</Text>
         <Text style={styles.bigNumber}>{debtCalories}<Text style={styles.unit}>kcal</Text></Text>
-        <Text style={styles.subText}>強制ウォーキングが必要です</Text>
+        <Text style={styles.subText}>寄り道ウォーキングで消費しましょう</Text>
       </View>
 
       {/* カメラへ */}
@@ -46,7 +55,7 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, backgroundColor: '#f5f5f5', gap: 16 },
+  container: { flex: 1, padding: 24, backgroundColor: '#f5f5f5', gap: 16, justifyContent: 'center' },
   card: { backgroundColor: 'white', borderRadius: 16, padding: 24, alignItems: 'center', gap: 8 },
   debtCard: { borderWidth: 2, borderColor: '#FF5722' },
   cardTitle: { fontSize: 14, color: '#888' },
