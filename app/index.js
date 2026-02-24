@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import StepGender from '../components/steps/StepGender';
 import StepAge from '../components/steps/StepAge';
@@ -8,6 +9,7 @@ import StepDays from '../components/steps/StepDays';
 import StepActivityLevel from '../components/steps/StepActivityLevel';
 import StepDetourLevel from '../components/steps/StepDetourLevel';
 import DevSkipButton from '../components/DevSkipButton';
+import { saveProfile } from '../lib/supabase';
 
 export default function SetupScreen() {
   const [step, setStep] = useState(0);
@@ -21,12 +23,22 @@ export default function SetupScreen() {
     activityLevel: null,
     detourLevel: null,
   });
-  const handleComplete = () => {
-  router.push('/home');
+  const handleComplete = async () => {
+    const { error } = await saveProfile(userData);
+    if (error) {
+      console.log('プロフィール保存エラー:', error);
+      Alert.alert('保存エラー', 'データの保存に失敗しました。もう一度お試しください。');
+      return;
+    }
+    router.push('/home');
   };
   // developer mode
-  const handleDevSkip = (devData) => {
+  const handleDevSkip = async (devData) => {
     setUserData(devData);
+    const { error } = await saveProfile(devData);
+    if (error) {
+      console.log('プロフィール保存エラー(dev):', error);
+    }
     router.push('/home');
   };
 

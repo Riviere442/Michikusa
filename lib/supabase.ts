@@ -41,3 +41,39 @@ export function onAuthStateChange(callback: (event: string, session: any) => voi
   });
   return subscription;
 }
+
+// --- Profile helpers ---
+export async function saveProfile(profileData: {
+  gender: string | null;
+  age: string;
+  height: string;
+  weight: string;
+  targetWeight: string;
+  days: string;
+  activityLevel: number | null;
+  detourLevel: number | null;
+}) {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
+    return { error: userError || new Error('ユーザーが見つかりません') };
+  }
+
+  const row = {
+    id: user.id,
+    gender: profileData.gender,
+    age: profileData.age ? parseInt(profileData.age, 10) : null,
+    height: profileData.height ? parseFloat(profileData.height) : null,
+    weight: profileData.weight ? parseFloat(profileData.weight) : null,
+    target_weight: profileData.targetWeight ? parseFloat(profileData.targetWeight) : null,
+    days: profileData.days ? parseInt(profileData.days, 10) : null,
+    activity_level: profileData.activityLevel,
+    detour_level: profileData.detourLevel,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .upsert(row, { onConflict: 'id' });
+
+  return { data, error };
+}
