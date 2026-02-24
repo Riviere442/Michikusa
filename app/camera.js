@@ -18,6 +18,14 @@ export default function CameraScreen() {
       alert('カメラの許可が必要です');
       return;
     }
+    
+    alert(
+      '以下の点に注意して撮影してください。\n\n' +
+      '明るい場所で撮影する\n' +
+      '真上から撮影する\n' +
+      '食材を重ねない'
+    );
+    
     const result = await ImagePicker.launchCameraAsync({
       quality: 0.8,
     });
@@ -101,7 +109,7 @@ export default function CameraScreen() {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setImageUri(null)} style={{ alignItems: 'center', marginTop: 8 }}>
-            <Text style={styles.retakeText}>撮り直す</Text>
+            <Text style={[styles.retakeText, { marginTop: 7 }]}>撮り直す</Text>
           </TouchableOpacity>
         </Animated.View>
       )}

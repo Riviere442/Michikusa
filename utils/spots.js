@@ -29,20 +29,44 @@ export function calcDistance(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// 候補からランダムに3件選び直線距離でソート
-export function selectAndSortSpots(candidates, currentLat, currentLng, destLat, destLng) {
-  // ランダムに3件選ぶ
-  const shuffled = [...candidates].sort(() => Math.random() - 0.5);
-  const selected = shuffled.slice(0, 3);
+const MAX_DISTANCE_M = 7000; // 最大7km
 
-  // 現在地→経由地→目的地の直線距離合計でソート（昇順）
-  return selected
+export function selectAndSortSpots(candidates, currentLat, currentLng, destLat, destLng) {
+  // 7km以内の候補に絞る
+  const filtered = candidates.filter(spot => {
+    const total = calcDistance(currentLat, currentLng, spot.lat, spot.lng)
+                + calcDistance(spot.lat, spot.lng, destLat, destLng);
+    return total <= MAX_DISTANCE_M;
+  });
+
+  // 距離を付与してソート（昇順）
+  const withDistance = filtered
     .map(spot => ({
       ...spot,
       totalDistance: calcDistance(currentLat, currentLng, spot.lat, spot.lng)
                    + calcDistance(spot.lat, spot.lng, destLat, destLng),
     }))
     .sort((a, b) => a.totalDistance - b.totalDistance);
+
+  if (withDistance.length === 0) return [];
+  if (withDistance.length === 1) return [withDistance[0]];
+  if (withDistance.length === 2) return [withDistance[0], withDistance[1]];
+
+  // ルート1：最短
+  const route1 = withDistance[0];
+
+  // ルート3：最長（7km以内の中で最大）
+  const route3 = withDistance[withDistance.length - 1];
+
+  // ルート2：中央値に最も近いもの（ルート1・3を除いた中から）
+  const middle = withDistance.slice(1, -1);
+  const medianDist = (route1.totalDistance + route3.totalDistance) / 2;
+  const route2 = middle.reduce((closest, spot) =>
+    Math.abs(spot.totalDistance - medianDist) < Math.abs(closest.totalDistance - medianDist)
+      ? spot : closest
+  , middle[0]);
+
+  return [route1, route2, route3];
 }
 
 // 現在時刻の時間帯を取得（例：14 → '14時'）
