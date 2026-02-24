@@ -147,6 +147,9 @@ export default function MapScreen() {
   if (!selectedSpot) {
     return (
       <View style={styles.container}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>← 戻る</Text>
+        </TouchableOpacity>
         <Text style={styles.title}>寄り道ルートを選んでください</Text>
         <Text style={styles.subtitle}>目的地：{destName}</Text>
 
@@ -191,6 +194,11 @@ export default function MapScreen() {
   // ルート選択後のマップ画面
   return (
     <View style={styles.container}>
+      {!tracking && (
+        <TouchableOpacity style={styles.backButton} onPress={() => { setSelectedSpot(null); setRouteCoords([]); setPlannedRoute([]); setTotalDistance(0); setBurnedCalories(0); }}>
+          <Text style={styles.backButtonText}>← 戻る</Text>
+        </TouchableOpacity>
+      )}
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -274,7 +282,9 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   loading: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  title: { fontSize: 20, fontWeight: 'bold', marginTop: 60, marginHorizontal: 24 },
+  title: { fontSize: 20, fontWeight: 'bold', marginTop: 130, marginHorizontal: 24 },
+  backButton: { position: 'absolute', top: 70, left: 20, paddingVertical: 8, paddingHorizontal: 16, backgroundColor: '#4CAF50', borderRadius: 8, zIndex: 10 },
+  backButtonText: { fontSize: 18, color: '#fff', fontWeight: 'bold' },
   subtitle: { fontSize: 14, color: '#888', marginHorizontal: 24, marginTop: 4, marginBottom: 16 },
   spotList: { flex: 1, paddingHorizontal: 24 },
   spotButton: { backgroundColor: 'white', borderRadius: 16, padding: 20, marginBottom: 12, gap: 8 },

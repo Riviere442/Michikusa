@@ -74,6 +74,23 @@ export default function CameraScreen() {
   return (
     <View style={styles.container}>
 
+      {/* 戻るボタン（左上固定） */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => {
+          if (imageUri) {
+            setImageUri(null);
+            setCalories(null);
+            setItems([]);
+            buttonOpacity.setValue(1);
+          } else {
+            router.replace('/home');
+          }
+        }}
+      >
+        <Text style={styles.backButtonText}>← 戻る</Text>
+      </TouchableOpacity>
+
       {/* 写真表示エリア */}
       {imageUri ? (
         <Image source={{ uri: imageUri }} style={styles.image} />
@@ -91,9 +108,6 @@ export default function CameraScreen() {
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleLibrary}>
             <Text style={styles.buttonText}>🖼 ライブラリから選ぶ</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/home')}>
-            <Text style={styles.backButtonText}>← 戻る</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -113,9 +127,6 @@ export default function CameraScreen() {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setImageUri(null)} style={{ alignItems: 'center', marginTop: 8 }}>
             <Text style={[styles.retakeText, { marginTop: 7 }]}>撮り直す</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.backButton} onPress={() => { setImageUri(null); buttonOpacity.setValue(1); }}>
-            <Text style={styles.backButtonText}>← 戻る</Text>
           </TouchableOpacity>
         </Animated.View>
       )}
@@ -149,12 +160,12 @@ const styles = StyleSheet.create({
   selectButtons: { gap: 12, alignItems: 'center' },
   button: { backgroundColor: '#4CAF50', padding: 16, borderRadius: 12, alignItems: 'center', width: 240 },
   buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
-  backButton: { marginTop: 8, padding: 10 },
-  backButtonText: { fontSize: 15, color: '#888' },
+  backButton: { position: 'absolute', top: 70, left: 20, paddingVertical: 8, paddingHorizontal: 16, backgroundColor: '#4CAF50', borderRadius: 8, zIndex: 10 },
+  backButtonText: { fontSize: 18, color: '#fff', fontWeight: 'bold' },
   analyzeButton: { backgroundColor: '#FF9800', padding: 16, borderRadius: 12, width: 240, alignItems: 'center' },
   analyzeButtonText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
   disabled: { backgroundColor: '#ccc' },
-  retakeText: { color: '#888', fontSize: 14 },
+  retakeText: { color: '#888', fontSize: 16 },
   resultArea: { alignItems: 'center', gap: 8 },
   totalCalories: { fontSize: 20, color: '#333' },
   calorieNumber: { fontSize: 48, fontWeight: 'bold', color: '#FF5722' },

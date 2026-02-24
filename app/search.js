@@ -115,7 +115,13 @@ export default function SearchScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>目的地を検索</Text>
+      <View style={styles.titleRow}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>← 戻る</Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>目的地を検索</Text>
+        <View style={styles.titleSpacer} />
+      </View>
 
       <View style={styles.inputRow}>
         <TextInput
@@ -156,7 +162,11 @@ export default function SearchScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 24, backgroundColor: '#f5f5f5' },
-  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 16, marginTop: 48 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 48, marginBottom: 16 },
+  backButton: { paddingVertical: 8, paddingHorizontal: 16, backgroundColor: '#4CAF50', borderRadius: 8 },
+  backButtonText: { fontSize: 18, color: '#fff', fontWeight: 'bold' },
+  title: { fontSize: 20, fontWeight: 'bold' },
+  titleSpacer: { width: 90 },
   inputRow: { flexDirection: 'row', gap: 8 },
   input: { flex: 1, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, backgroundColor: 'white', fontSize: 16 },
   searchButton: { backgroundColor: '#4CAF50', padding: 12, borderRadius: 8, justifyContent: 'center' },
