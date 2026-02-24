@@ -25,7 +25,7 @@ export default function LoginScreen() {
       if (res.error) {
         Alert.alert('ログインエラー', 'メールアドレスまたはパスワードが正しくありません');
       } else {
-        router.replace('/home');
+        router.replace('/');
       }
     } catch (e) {
       Alert.alert('エラー', '予期しないエラーが発生しました。もう一度お試しください。');
@@ -61,8 +61,7 @@ export default function LoginScreen() {
             'アカウントの登録は完了しましたが、自動ログインに失敗しました。ログイン画面からもう一度お試しください。'
           );
         } else {
-          // 自動サインイン成功 → ホーム画面へ（RootLayoutが自動で処理）
-          router.replace('/home');
+          router.replace('/');
         }
       }
     } catch (e) {

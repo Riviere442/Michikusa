@@ -1,8 +1,9 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, StyleSheet } from 'react-native';
 import { stepStyles as styles } from '../../constants/styles';
 
 export default function StepDays({ value, onChange, onNext, onBack }) {
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <View style={styles.container}>
       <Text style={styles.title}>ダイエット達成までの日数</Text>
       <View style={styles.inputRow}>
@@ -24,5 +25,6 @@ export default function StepDays({ value, onChange, onNext, onBack }) {
         ><Text>次へ →</Text></TouchableOpacity>
       </View>
     </View>
+    </TouchableWithoutFeedback>
   );
 }
