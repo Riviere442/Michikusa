@@ -43,15 +43,19 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <DevSkipButton showMapSkip={true} />
+
+      {/* 挨拶 */}
+      <Text style={styles.greeting}>{u.nickname ? `${u.nickname}さん、こんにちは！` : 'こんにちは！'}</Text>
+
       {/* 今日の目標 */}
-      <View style={styles.card}>
+      <View style={[styles.card, styles.targetCard]}>
         <Text style={styles.cardTitle}>今日の目標摂取カロリー</Text>
         <Text style={styles.bigNumber}>{Math.round(dailyTarget)}<Text style={styles.unit}>kcal</Text></Text>
         <Text style={styles.subText}>一食あたり {Math.round(dailyTarget / 3)} kcal</Text>
       </View>
 
       {/* 負債カロリー */}
-      <View style={[styles.card, debtCalories > 0 && styles.debtCard]}>
+      <View style={[styles.card, styles.debtCard]}>
         <Text style={styles.cardTitle}>運動負債</Text>
         <Text style={styles.bigNumber}>{debtCalories}<Text style={styles.unit}>kcal</Text></Text>
         <Text style={styles.subText}>寄り道ウォーキングで消費しましょう</Text>
@@ -73,8 +77,10 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 24, backgroundColor: '#f5f5f5', gap: 16, justifyContent: 'center' },
+  greeting: { fontSize: 24, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 8 },
   card: { backgroundColor: 'white', borderRadius: 16, padding: 24, alignItems: 'center', gap: 8 },
   debtCard: { borderWidth: 2, borderColor: '#FF5722' },
+  targetCard: { borderWidth: 2, borderColor: '#4CAF50' },
   cardTitle: { fontSize: 14, color: '#888' },
   bigNumber: { fontSize: 48, fontWeight: 'bold', color: '#333' },
   unit: { fontSize: 20, fontWeight: 'normal', color: '#888' },

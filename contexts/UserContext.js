@@ -5,6 +5,7 @@ const UserContext = createContext();
 
 export function UserProvider({ children }) {
   const [userData, setUserData] = useState({
+    nickname: '',
     gender: null,
     age: '',
     height: '',

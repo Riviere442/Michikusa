@@ -44,6 +44,7 @@ export function onAuthStateChange(callback: (event: string, session: any) => voi
 
 // --- Profile helpers ---
 export async function saveProfile(profileData: {
+  nickname: string;
   gender: string | null;
   age: string;
   height: string;
@@ -60,6 +61,7 @@ export async function saveProfile(profileData: {
 
   const row = {
     id: user.id,
+    nickname: profileData.nickname || null,
     gender: profileData.gender,
     age: profileData.age ? parseInt(profileData.age, 10) : null,
     height: profileData.height ? parseFloat(profileData.height) : null,
@@ -96,6 +98,7 @@ export async function loadProfile() {
 
   return {
     profile: {
+      nickname: data.nickname ?? '',
       gender: data.gender,
       age: data.age?.toString() ?? '',
       height: data.height?.toString() ?? '',

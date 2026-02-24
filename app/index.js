@@ -8,6 +8,7 @@ import StepWeight from '../components/steps/StepWeight';
 import StepDays from '../components/steps/StepDays';
 import StepActivityLevel from '../components/steps/StepActivityLevel';
 import StepDetourLevel from '../components/steps/StepDetourLevel';
+import StepNickname from '../components/steps/StepNickname';
 import DevSkipButton from '../components/DevSkipButton';
 import { useUser } from '../contexts/UserContext';
 import { saveProfile } from '../lib/supabase';
@@ -16,6 +17,7 @@ export default function SetupScreen() {
   const { setUserData: saveToContext } = useUser();
   const [step, setStep] = useState(0);
   const [userData, setUserData] = useState({
+    nickname: '',
     gender: null,
     age: '',
     height: '',
@@ -51,7 +53,8 @@ export default function SetupScreen() {
   const update = (key, value) => setUserData(prev => ({ ...prev, [key]: value }));
 
   const steps = [
-    <StepGender value={userData.gender} onSelect={v => update('gender', v)} onNext={next} onBack={() => router.replace('/login')} />,
+    <StepNickname value={userData.nickname} onChange={v => update('nickname', v)} onNext={next} onBack={() => router.replace('/login')} />,
+    <StepGender value={userData.gender} onSelect={v => update('gender', v)} onNext={next} onBack={back} />,
     <StepAge value={userData.age} onChange={v => update('age', v)} onNext={next} onBack={back} />,
     <StepHeight value={userData.height} onChange={v => update('height', v)} onNext={next} onBack={back} />,
     <StepWeight

@@ -21,7 +21,7 @@ export default function StepGender({ value, onSelect, onNext, onBack }) {
       <View style={styles.buttons}>
         {onBack && (
           <TouchableOpacity onPress={onBack} style={styles.backButton}>
-            <Text style={styles.backButtonText}>← ログイン前へ戻る</Text>
+            <Text style={styles.backButtonText}>← 戻る</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity
