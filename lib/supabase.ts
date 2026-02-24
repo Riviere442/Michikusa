@@ -77,3 +77,34 @@ export async function saveProfile(profileData: {
 
   return { data, error };
 }
+
+export async function loadProfile() {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
+    return { profile: null, error: userError || new Error('ユーザーが見つかりません') };
+  }
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  if (error || !data) {
+    return { profile: null, error };
+  }
+
+  return {
+    profile: {
+      gender: data.gender,
+      age: data.age?.toString() ?? '',
+      height: data.height?.toString() ?? '',
+      weight: data.weight?.toString() ?? '',
+      targetWeight: data.target_weight?.toString() ?? '',
+      days: data.days?.toString() ?? '',
+      activityLevel: data.activity_level,
+      detourLevel: data.detour_level,
+    },
+    error: null,
+  };
+}

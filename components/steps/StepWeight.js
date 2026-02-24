@@ -33,12 +33,12 @@ export default function StepWeight({ weight, targetWeight, onChangeWeight, onCha
       </View>
 
       <View style={styles.buttons}>
-        <TouchableOpacity onPress={onBack}><Text>← 戻る</Text></TouchableOpacity>
+        <TouchableOpacity onPress={onBack} style={styles.backButton}><Text style={styles.backButtonText}>← 戻る</Text></TouchableOpacity>
         <TouchableOpacity
           style={[styles.nextButton, !isValid && styles.disabled]}
           onPress={onNext}
           disabled={!isValid}
-        ><Text>次へ →</Text></TouchableOpacity>
+        ><Text style={styles.nextButtonText}>次へ →</Text></TouchableOpacity>
       </View>
     </View>
     </TouchableWithoutFeedback>

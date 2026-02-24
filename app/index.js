@@ -51,7 +51,7 @@ export default function SetupScreen() {
   const update = (key, value) => setUserData(prev => ({ ...prev, [key]: value }));
 
   const steps = [
-    <StepGender value={userData.gender} onSelect={v => update('gender', v)} onNext={next} />,
+    <StepGender value={userData.gender} onSelect={v => update('gender', v)} onNext={next} onBack={() => router.replace('/login')} />,
     <StepAge value={userData.age} onChange={v => update('age', v)} onNext={next} onBack={back} />,
     <StepHeight value={userData.height} onChange={v => update('height', v)} onNext={next} onBack={back} />,
     <StepWeight

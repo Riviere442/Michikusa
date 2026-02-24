@@ -15,16 +15,16 @@ export default function StepAge({ value, onChange, onNext, onBack }) {
         placeholder="例：25"
       />
 
-      <View style={[styles.button, {gap:32}]}>
-        <TouchableOpacity onPress={onBack} style={{ marginLeft:10, marginTop:32 }}>
-          <Text>← 戻る</Text>
+      <View style={styles.buttons}>
+        <TouchableOpacity onPress={onBack} style={styles.backButton}>
+          <Text style={styles.backButtonText}>← 戻る</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.nextButton, !value && styles.disabled]}
           onPress={onNext}
           disabled={!value}
         >
-          <Text>次へ →</Text>
+          <Text style={styles.nextButtonText}>次へ →</Text>
         </TouchableOpacity>
       </View>
     </View>

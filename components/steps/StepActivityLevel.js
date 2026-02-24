@@ -23,12 +23,12 @@ export default function StepActivityLevel({ value, onSelect, onNext, onBack }) {
         </TouchableOpacity>
       ))}
       <View style={styles.buttons}>
-        <TouchableOpacity onPress={onBack}><Text>← 戻る</Text></TouchableOpacity>
+        <TouchableOpacity onPress={onBack} style={styles.backButton}><Text style={styles.backButtonText}>← 戻る</Text></TouchableOpacity>
         <TouchableOpacity
           style={[styles.nextButton, !value && styles.disabled]}
           onPress={onNext}
           disabled={!value}
-        ><Text>次へ →</Text></TouchableOpacity>
+        ><Text style={styles.nextButtonText}>次へ →</Text></TouchableOpacity>
       </View>
     </View>
   );

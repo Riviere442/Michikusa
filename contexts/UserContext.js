@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { loadProfile } from '../lib/supabase';
 
 const UserContext = createContext();
 
@@ -13,6 +14,16 @@ export function UserProvider({ children }) {
     activityLevel: null,
     detourLevel: null,
   });
+
+  // アプリ起動時にDBからプロフィールを読み込む
+  useEffect(() => {
+    (async () => {
+      const { profile, error } = await loadProfile();
+      if (profile && !error) {
+        setUserData(profile);
+      }
+    })();
+  }, []);
 
   return (
     <UserContext.Provider value={{ userData, setUserData }}>

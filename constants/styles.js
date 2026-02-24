@@ -12,6 +12,9 @@ export const stepStyles = StyleSheet.create({
   optionDesc: { fontSize: 12, color: '#888' },
   selected: { backgroundColor: '#4CAF50', borderColor: '#4CAF50' },
   buttons: { flexDirection: 'row', alignItems: 'center', gap: 24, marginTop: 32 },
-  nextButton: { padding: 16, backgroundColor: '#4CAF50', borderRadius: 8 },
+  backButton: { paddingVertical: 12, paddingHorizontal: 24, backgroundColor: '#4CAF50', borderRadius: 8 },
+  backButtonText: { fontSize: 16, color: '#fff', fontWeight: 'bold' },
+  nextButton: { paddingVertical: 12, paddingHorizontal: 24, backgroundColor: '#4CAF50', borderRadius: 8 },
+  nextButtonText: { fontSize: 16, color: '#fff', fontWeight: 'bold' },
   disabled: { backgroundColor: '#ccc' },
 });

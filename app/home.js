@@ -5,18 +5,18 @@ import DevSkipButton from '../components/DevSkipButton';
 import { signOut } from '../lib/supabase';
 import { useUser } from '../contexts/UserContext';
 
-// 仮データ（後でAsyncStorageやContextに置き換える）
-const DEV_DATA = {
-  gender: '男性', age: 25, height: 170,
-  weight: 70, targetWeight: 65, days: 90,
-  activityLevel: 1.5, detourLevel: 0.5,
-};
-
 export default function HomeScreen() {
   const { userData } = useUser();
 
-  // Context にデータがなければ DEV_DATA をフォールバック
-  const u = userData.gender ? userData : DEV_DATA;
+  // 仮データ（フォールバック用に残しておく）
+  // const DEV_DATA = {
+  //   gender: '男性', age: 25, height: 170,
+  //   weight: 70, targetWeight: 65, days: 90,
+  //   activityLevel: 1.5, detourLevel: 0.5,
+  // };
+
+  // DBからのデータを使用
+  const u = userData;
 
   const gender = u.gender;
   const age = parseFloat(u.age);
@@ -62,7 +62,7 @@ export default function HomeScreen() {
         <Text style={styles.cameraButtonText}>📷 食事を記録する</Text>
       </TouchableOpacity>
 
-      {/* サインアウト */}
+      {/* ログアウト */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
         <Text style={styles.logoutButtonText}>ログアウト</Text>
       </TouchableOpacity>
@@ -81,6 +81,6 @@ const styles = StyleSheet.create({
   subText: { fontSize: 14, color: '#888' },
   cameraButton: { backgroundColor: '#4CAF50', borderRadius: 16, padding: 20, alignItems: 'center', marginTop: 8 },
   cameraButtonText: { fontSize: 18, color: 'white', fontWeight: 'bold' },
-  logoutButton: { backgroundColor: '#f44336', borderRadius: 16, padding: 12, alignItems: 'center', marginTop: 16 },
-  logoutButtonText: { fontSize: 16, color: 'white', fontWeight: 'bold' },
+  logoutButton: { position: 'absolute', bottom: 40, alignSelf: 'center', backgroundColor: '#f44336', borderRadius: 8, paddingVertical: 6, paddingHorizontal: 12 },
+  logoutButtonText: { fontSize: 12, color: 'white', fontWeight: 'bold' },
 });

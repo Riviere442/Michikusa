@@ -133,8 +133,8 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: '700', marginBottom: 24, textAlign: 'center' },
   input: { borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 6, marginBottom: 8 },
   buttons: { marginTop: 8 },
-  textBtn: { paddingVertical: 10, paddingHorizontal: 20 },
-  textBtnLabel: { fontSize: 16, fontWeight: '600', color: '#2196F3', textAlign: 'center' },
+  textBtn: { paddingVertical: 12, paddingHorizontal: 32, backgroundColor: '#4CAF50', borderRadius: 8 },
+  textBtnLabel: { fontSize: 16, fontWeight: '600', color: '#fff', textAlign: 'center' },
   credit: { fontSize: 11, color: '#aaa', textAlign: 'center', marginTop: 32 },
 
 });
