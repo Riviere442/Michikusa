@@ -1,5 +1,5 @@
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_CLOUD_API_KEY;
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${GEMINI_API_KEY}`;
 import * as ImageManipulator from 'expo-image-manipulator';
 
 // 画像を圧縮するヘルパー
@@ -14,8 +14,8 @@ async function compressImage(imageUri) {
 
 export async function analyzeCalories(imageUri) {
   try {
-    const compressedUri = await compressImage(imageUri);
-    const response = await fetch(compressedUri);
+    // const compressedUri = await compressImage(imageUri);
+    const response = await fetch(imageUri);
     const blob = await response.blob();
     const base64 = await blobToBase64(blob);
     const base64Data = base64.split(',')[1];

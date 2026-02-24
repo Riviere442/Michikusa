@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
+<<<<<<< HEAD
+=======
 import { Alert } from 'react-native';
+>>>>>>> 449f6ff5d04b642f388be3b854e2d97729faad66
 import { router } from 'expo-router';
 import StepGender from '../components/steps/StepGender';
 import StepAge from '../components/steps/StepAge';
@@ -9,9 +12,14 @@ import StepDays from '../components/steps/StepDays';
 import StepActivityLevel from '../components/steps/StepActivityLevel';
 import StepDetourLevel from '../components/steps/StepDetourLevel';
 import DevSkipButton from '../components/DevSkipButton';
+<<<<<<< HEAD
+import { useUser } from '../contexts/UserContext';
+=======
 import { saveProfile } from '../lib/supabase';
+>>>>>>> 449f6ff5d04b642f388be3b854e2d97729faad66
 
 export default function SetupScreen() {
+  const { setUserData: saveToContext } = useUser();
   const [step, setStep] = useState(0);
   const [userData, setUserData] = useState({
     gender: null,
@@ -42,6 +50,11 @@ export default function SetupScreen() {
     router.push('/home');
   };
 
+  const handleDevSkip = (devData) => {
+    setUserData(devData);
+    saveToContext(devData);
+    router.push('/home');
+  };
 
   const next = () => setStep(s => s + 1);
   const back = () => setStep(s => s - 1);
@@ -61,13 +74,12 @@ export default function SetupScreen() {
     />,
     <StepDays value={userData.days} onChange={v => update('days', v)} onNext={next} onBack={back} />,
     <StepActivityLevel value={userData.activityLevel} onSelect={v => update('activityLevel', v)} onNext={next} onBack={back} />,
-    <StepDetourLevel value={userData.detourLevel} onSelect={v => update('detourLevel', v)} onNext={next} onBack={back} />,
     <StepDetourLevel
       value={userData.detourLevel}
       onSelect={v => update('detourLevel', v)}
-      onNext={handleComplete}  // ← nextからhandleCompleteに変更
+      onNext={handleComplete}
       onBack={back}
-    />
+    />,
   ];
 
   return (
