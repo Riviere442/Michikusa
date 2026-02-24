@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import StepGender from '../components/steps/StepGender';
 import StepAge from '../components/steps/StepAge';

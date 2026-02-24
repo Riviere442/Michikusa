@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { calcBMR, calcDailyEnergy, calcDailyDeficit, calcDailyTarget } from '../utils/calorieCalc';
 import DevSkipButton from '../components/DevSkipButton';
+import { signOut } from '../lib/supabase';
 import { DEV_DATA } from '../components/DevSkipButton';
 import { useUser } from '../contexts/UserContext';
 
@@ -28,6 +29,11 @@ export default function HomeScreen() {
   // 負債カロリー = 寄り道（運動）で消費すべき分
   const debtCalories = Math.round(dailyDeficit * detourLevel);
 
+  const handleSignOut = async () => {
+    await signOut();
+    router.replace('/login');
+  };
+
   return (
     <View style={styles.container}>
       <DevSkipButton showMapSkip={true} />
@@ -50,6 +56,11 @@ export default function HomeScreen() {
         <Text style={styles.cameraButtonText}>📷 食事を記録する</Text>
       </TouchableOpacity>
 
+      {/* サインアウト */}
+      <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
+        <Text style={styles.logoutButtonText}>ログアウト</Text>
+      </TouchableOpacity>
+
     </View>
   );
 }
@@ -64,4 +75,6 @@ const styles = StyleSheet.create({
   subText: { fontSize: 14, color: '#888' },
   cameraButton: { backgroundColor: '#4CAF50', borderRadius: 16, padding: 20, alignItems: 'center', marginTop: 8 },
   cameraButtonText: { fontSize: 18, color: 'white', fontWeight: 'bold' },
+  logoutButton: { backgroundColor: '#f44336', borderRadius: 16, padding: 12, alignItems: 'center', marginTop: 16 },
+  logoutButtonText: { fontSize: 16, color: 'white', fontWeight: 'bold' },
 });
