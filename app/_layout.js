@@ -1,9 +1,7 @@
 import { Slot, router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import * as Linking from 'expo-linking';
-import { onAuthStateChange, supabase } from '../lib/supabase';
-import { UserProvider } from '../contexts/UserContext';
+import { onAuthStateChange } from '../lib/supabase';
 
 export default function RootLayout() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -16,31 +14,12 @@ export default function RootLayout() {
     setTimeout(() => router.replace(path), 0);
   };
 
-  // ディープリンク処理
+  // 起動時は必ずログイン画面を表示
   useEffect(() => {
-    const handleDeepLink = async (url) => {
-      console.log('[RootLayout] Deep link received:', url);
-      if (url.includes('auth/callback') || url.includes('#access_token')) {
-        console.log('[RootLayout] OAuth callback detected');
-        setTimeout(async () => {
-          const { data } = await supabase.auth.getSession();
-          if (data.session) {
-            hasNavigated.current = false;
-            navigate('/home');
-          }
-        }, 500);
-      }
-    };
-
-    Linking.getInitialURL().then((url) => {
-      if (url) handleDeepLink(url);
-    });
-
-    const sub = Linking.addEventListener('url', ({ url }) => handleDeepLink(url));
-    return () => sub.remove();
+    navigate('/login');
   }, []);
 
-  // 認証セッション確認
+  // 認証状態の変化を監視（ログイン成功時に質問画面へ遷移）
   useEffect(() => {
     let isActive = true;
 
@@ -48,13 +27,9 @@ export default function RootLayout() {
       console.log('[RootLayout] Auth event:', event, 'hasSession:', !!session);
       if (!isActive) return;
 
-      if (event === 'INITIAL_SESSION') {
-        if (session) navigate('/home');
-        else navigate('/login');
-      }
       if (event === 'SIGNED_IN') {
         hasNavigated.current = false;
-        navigate('/home');
+        navigate('/');
       }
       if (event === 'SIGNED_OUT') {
         hasNavigated.current = false;
@@ -62,15 +37,8 @@ export default function RootLayout() {
       }
     });
 
-    const timeout = setTimeout(() => {
-      if (!isActive) return;
-      console.log('[RootLayout] Timeout fallback → login');
-      navigate('/login');
-    }, 5000);
-
     return () => {
       isActive = false;
-      clearTimeout(timeout);
       sub?.unsubscribe?.();
     };
   }, []);
@@ -84,8 +52,8 @@ export default function RootLayout() {
   }
 
   return (
-    <UserProvider>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <Slot />
-    </UserProvider>
+    </View>
   );
 }

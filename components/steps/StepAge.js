@@ -1,8 +1,9 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, StyleSheet } from 'react-native';
 import { stepStyles as styles } from '../../constants/styles';
 
 export default function StepAge({ value, onChange, onNext, onBack }) {
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <View style={styles.container}>
       <Text style={styles.title}>年齢を入力してください</Text>
 
@@ -27,5 +28,6 @@ export default function StepAge({ value, onChange, onNext, onBack }) {
         </TouchableOpacity>
       </View>
     </View>
+    </TouchableWithoutFeedback>
   );
 }

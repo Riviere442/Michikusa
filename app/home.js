@@ -3,8 +3,13 @@ import { router } from 'expo-router';
 import { calcBMR, calcDailyEnergy, calcDailyDeficit, calcDailyTarget } from '../utils/calorieCalc';
 import DevSkipButton from '../components/DevSkipButton';
 import { signOut } from '../lib/supabase';
-import { DEV_DATA } from '../components/DevSkipButton';
-import { useUser } from '../contexts/UserContext';
+
+// 仮データ（後でAsyncStorageやContextに置き換える）
+const USER = {
+  gender: '男性', age: 25, height: 170,
+  weight: 70, targetWeight: 65, days: 90,
+  activityLevel: 1.5, detourLevel: 0.5,
+};
 
 export default function HomeScreen() {
   const { userData } = useUser();
@@ -32,6 +37,11 @@ export default function HomeScreen() {
   const handleSignOut = async () => {
     await signOut();
     router.replace('/login');
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    // ナビゲーションはRootLayoutが自動で処理します
   };
 
   return (
