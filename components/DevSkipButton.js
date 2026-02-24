@@ -1,7 +1,7 @@
-import { TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 import { router } from 'expo-router';
 
-const DEV_MODE = true; // リリース時にfalseにする
+const DEV_MODE = true;
 
 const DEV_DATA = {
   gender: '男性',
@@ -14,17 +14,32 @@ const DEV_DATA = {
   detourLevel: 0.5,
 };
 
-export const DEV_MODE_FLAG = DEV_MODE;
-
-export default function DevSkipButton({ onSkip }) {
+export default function DevSkipButton({ onSkip, showMapSkip = false }) {
   if (!DEV_MODE) return null;
 
   return (
-    <TouchableOpacity
-      onPress={() => onSkip(DEV_DATA)}
-      style={{ position: 'absolute', top: 60, right: 16, backgroundColor: '#FF5722', padding: 8, borderRadius: 8 }}
-    >
-      <Text style={{ color: 'white', fontSize: 12 }}>DEV SKIP</Text>
-    </TouchableOpacity>
+    <View style={{ position: 'absolute', top: 60, right: 16, gap: 8 }}>
+      {onSkip && (
+        <TouchableOpacity
+          onPress={() => onSkip(DEV_DATA)}
+          style={styles.button}
+        >
+          <Text style={styles.text}>DEV SKIP</Text>
+        </TouchableOpacity>
+      )}
+      {showMapSkip && (
+        <TouchableOpacity
+          onPress={() => router.push('/map')}
+          style={[styles.button, { backgroundColor: '#9C27B0' }]}
+        >
+          <Text style={styles.text}>→ MAP</Text>
+        </TouchableOpacity>
+      )}
+    </View>
   );
 }
+
+const styles = {
+  button: { backgroundColor: '#FF5722', padding: 8, borderRadius: 8 },
+  text: { color: 'white', fontSize: 12 },
+};
