@@ -171,5 +171,5 @@ const styles = StyleSheet.create({
   calorieNumber: { fontSize: 48, fontWeight: 'bold', color: '#FF5722' },
   itemText: { fontSize: 14, color: '#666' },
   detourButton: { marginTop: 16, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  detourButtonText: { fontSize: 18, color: '#4CAF50', fontWeight: 'bold' },
+  detourButtonText: { fontSize: 30, color: '#4CAF50', fontWeight: 'bold' },
 });
