@@ -1,21 +1,21 @@
-import { View, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { stepStyles as styles } from '../../constants/styles';
+import ScrollPicker from '../ScrollPicker';
+
+const HEIGHT_OPTIONS = Array.from({ length: 61 }, (_, i) => String(i + 130)); // 130〜190cm
 
 export default function StepHeight({ value, onChange, onNext, onBack }) {
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <View style={styles.container}>
-      <Text style={styles.title}>身長を入力してください</Text>
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          value={value}
-          onChangeText={onChange}
-          placeholder="例：170"
-        />
-        <Text style={styles.unit}>cm</Text>
-      </View>
+      <Text style={styles.title}>身長を選択してください</Text>
+
+      <ScrollPicker
+        items={HEIGHT_OPTIONS}
+        selectedValue={value || '165'}
+        onValueChange={(v) => onChange(v)}
+        unit="cm"
+      />
+
       <View style={styles.buttons}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}><Text style={styles.backButtonText}>← 戻る</Text></TouchableOpacity>
         <TouchableOpacity
@@ -25,6 +25,5 @@ export default function StepHeight({ value, onChange, onNext, onBack }) {
         ><Text style={styles.nextButtonText}>次へ →</Text></TouchableOpacity>
       </View>
     </View>
-    </TouchableWithoutFeedback>
   );
 }

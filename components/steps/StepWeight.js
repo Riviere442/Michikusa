@@ -1,36 +1,30 @@
-import { View, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, Keyboard, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { stepStyles as styles } from '../../constants/styles';
+import ScrollPicker from '../ScrollPicker';
+
+const WEIGHT_OPTIONS = Array.from({ length: 121 }, (_, i) => String(i + 30)); // 30〜150kg
 
 export default function StepWeight({ weight, targetWeight, onChangeWeight, onChangeTarget, onNext, onBack }) {
   const isValid = weight && targetWeight;
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <View style={styles.container}>
-      <Text style={styles.title}>体重を入力してください</Text>
+      <Text style={[styles.title, { marginTop: 30 }]}>体重を選択してください</Text>
 
       <Text style={styles.label}>現在の体重</Text>
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          value={weight}
-          onChangeText={onChangeWeight}
-          placeholder="例：70"
-        />
-        <Text style={styles.unit}>kg</Text>
-      </View>
+      <ScrollPicker
+        items={WEIGHT_OPTIONS}
+        selectedValue={weight || '65'}
+        onValueChange={(v) => onChangeWeight(v)}
+        unit="kg"
+      />
 
       <Text style={styles.label}>理想の体重</Text>
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          value={targetWeight}
-          onChangeText={onChangeTarget}
-          placeholder="例：65"
-        />
-        <Text style={styles.unit}>kg</Text>
-      </View>
+      <ScrollPicker
+        items={WEIGHT_OPTIONS}
+        selectedValue={targetWeight || '60'}
+        onValueChange={(v) => onChangeTarget(v)}
+        unit="kg"
+      />
 
       <View style={styles.buttons}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}><Text style={styles.backButtonText}>← 戻る</Text></TouchableOpacity>
@@ -41,6 +35,5 @@ export default function StepWeight({ weight, targetWeight, onChangeWeight, onCha
         ><Text style={styles.nextButtonText}>次へ →</Text></TouchableOpacity>
       </View>
     </View>
-    </TouchableWithoutFeedback>
   );
 }

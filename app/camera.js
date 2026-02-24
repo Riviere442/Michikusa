@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   button: { backgroundColor: '#4CAF50', padding: 16, borderRadius: 12, alignItems: 'center', width: 240 },
   buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
   backButton: { position: 'absolute', top: 70, left: 20, paddingVertical: 8, paddingHorizontal: 16, backgroundColor: '#4CAF50', borderRadius: 8, zIndex: 10 },
-  backButtonText: { fontSize: 18, color: '#fff', fontWeight: 'bold' },
+  backButtonText: { fontSize: 18, color: '#ffffff', fontWeight: 'bold' },
   analyzeButton: { backgroundColor: '#FF9800', padding: 16, borderRadius: 12, width: 240, alignItems: 'center' },
   analyzeButtonText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
   disabled: { backgroundColor: '#ccc' },

@@ -42,10 +42,16 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      {/* 左上ロゴ */}
+      <Text style={styles.logo}>MICHIKUSA</Text>
+
       <DevSkipButton showMapSkip={true} />
 
       {/* 挨拶 */}
       <Text style={styles.greeting}>{u.nickname ? `${u.nickname}さん、こんにちは！` : 'こんにちは！'}</Text>
+      <Text style={styles.startGuide}>
+        まずは食事の写真をとってカロリー計算から始めよう
+      </Text>
 
       {/* 今日の目標 */}
       <View style={[styles.card, styles.targetCard]}>
@@ -77,7 +83,9 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 24, backgroundColor: '#f5f5f5', gap: 16, justifyContent: 'center' },
+    logo: { position: 'absolute', top: 56, left: 16, fontSize: 22, fontWeight: '800', color: '#222', letterSpacing: 0 },
   greeting: { fontSize: 24, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 8 },
+  startGuide: { fontSize: 15, color: '#666', textAlign: 'center', marginBottom: 24 },
   card: { backgroundColor: 'white', borderRadius: 16, padding: 24, alignItems: 'center', gap: 8 },
   debtCard: { borderWidth: 2, borderColor: '#FF5722' },
   targetCard: { borderWidth: 2, borderColor: '#4CAF50' },
