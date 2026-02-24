@@ -40,22 +40,11 @@ export default function RootLayout() {
     return () => sub.remove();
   }, []);
 
-  // 認証セッション確認
+  // 認証セッション確認（onAuthStateChange の INITIAL_SESSION のみで判定）
   useEffect(() => {
     let isActive = true;
 
-    // まず getSession で即座に確認
-    supabase.auth.getSession().then(({ data }) => {
-      if (!isActive) return;
-      console.log('[RootLayout] getSession hasSession:', !!data.session);
-      if (data.session) {
-        navigate('/home');
-      } else {
-        navigate('/login');
-      }
-    });
-
-    // onAuthStateChange も監視
+    // onAuthStateChange で一元管理
     const sub = onAuthStateChange((event, session) => {
       console.log('[RootLayout] Auth event:', event, 'hasSession:', !!session);
       if (!isActive) return;
