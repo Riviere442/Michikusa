@@ -75,7 +75,7 @@ export default function LoginScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <View style={styles.container}>
-      <Text style={styles.appName}>Michikusa</Text>
+      <Text style={styles.appName}>MICHIKUSA</Text>
       <Text style={styles.title}>ログイン</Text>
       <TextInput
         style={styles.input}
@@ -121,6 +121,7 @@ export default function LoginScreen() {
         </View>
       )}
 
+      <Text style={styles.credit}>Created by Team Beginner's Luck</Text>
     </View>
     </TouchableWithoutFeedback>
   );
@@ -128,11 +129,12 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, justifyContent: 'center', backgroundColor: '#ffffff' },
-  appName: { fontSize: 36, fontWeight: '800', textAlign: 'center', marginBottom: 8, color: '#333' },
-  title: { fontSize: 24, fontWeight: '700', marginBottom: 16, textAlign: 'center' },
+  appName: { fontSize: 48, fontWeight: '800', textAlign: 'center', marginBottom: 40, marginTop: -60, color: '#333' },
+  title: { fontSize: 24, fontWeight: '700', marginBottom: 24, textAlign: 'center' },
   input: { borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 6, marginBottom: 8 },
   buttons: { marginTop: 8 },
   textBtn: { paddingVertical: 10, paddingHorizontal: 20 },
   textBtnLabel: { fontSize: 16, fontWeight: '600', color: '#2196F3', textAlign: 'center' },
+  credit: { fontSize: 11, color: '#aaa', textAlign: 'center', marginTop: 32 },
 
 });

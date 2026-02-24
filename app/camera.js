@@ -84,6 +84,9 @@ export default function CameraScreen() {
           <TouchableOpacity style={styles.button} onPress={handleLibrary}>
             <Text style={styles.buttonText}>🖼 ライブラリから選ぶ</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.replace('/home')}>
+            <Text style={styles.backButtonText}>← 戻る</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -102,6 +105,9 @@ export default function CameraScreen() {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setImageUri(null)} style={{ alignItems: 'center', marginTop: 8 }}>
             <Text style={styles.retakeText}>撮り直す</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.backButton} onPress={() => { setImageUri(null); buttonOpacity.setValue(1); }}>
+            <Text style={styles.backButtonText}>← 戻る</Text>
           </TouchableOpacity>
         </Animated.View>
       )}
@@ -132,9 +138,11 @@ const styles = StyleSheet.create({
   image: { width: 320, height: 320, borderRadius: 16 },
   placeholder: { width: 320, height: 320, borderRadius: 16, backgroundColor: '#ddd', justifyContent: 'center', alignItems: 'center' },
   placeholderText: { color: '#888', fontSize: 16 },
-  selectButtons: { gap: 12 },
+  selectButtons: { gap: 12, alignItems: 'center' },
   button: { backgroundColor: '#4CAF50', padding: 16, borderRadius: 12, alignItems: 'center', width: 240 },
   buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
+  backButton: { marginTop: 8, padding: 10 },
+  backButtonText: { fontSize: 15, color: '#888' },
   analyzeButton: { backgroundColor: '#FF9800', padding: 16, borderRadius: 12, width: 240, alignItems: 'center' },
   analyzeButtonText: { color: 'white', fontSize: 18, fontWeight: 'bold' },
   disabled: { backgroundColor: '#ccc' },
