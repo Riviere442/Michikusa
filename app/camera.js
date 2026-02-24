@@ -117,7 +117,7 @@ export default function CameraScreen() {
               {item.name}：{item.calories}kcal
             </Text>
           ))}
-          <TouchableOpacity style={styles.detourButton} onPress={() => router.push('/map')}>
+          <TouchableOpacity style={styles.detourButton} onPress={() => router.push('/search')}>
             <Text style={styles.detourButtonText}>寄り道する →</Text>
           </TouchableOpacity>
         </View>
