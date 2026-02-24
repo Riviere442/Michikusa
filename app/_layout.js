@@ -1,78 +1,99 @@
-import { Slot, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { Slot, router } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import * as Linking from 'expo-linking';
 import { onAuthStateChange, supabase } from '../lib/supabase';
 
 export default function RootLayout() {
-  const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  const hasNavigated = useRef(false);
 
+  const navigate = (path) => {
+    if (hasNavigated.current) return;
+    hasNavigated.current = true;
+    setIsLoaded(true);
+    // 次のフレームで router を呼ぶ（レイアウト描画後）
+    setTimeout(() => router.replace(path), 0);
+  };
+
+  // ディープリンク処理
   useEffect(() => {
-    // OAuth リダイレクト後、ディープリンクをキャッチしてセッションを確認
     const handleDeepLink = async (url) => {
       console.log('[RootLayout] Deep link received:', url);
-      
-      // OAuth コールバック URL をチェック
       if (url.includes('auth/callback') || url.includes('#access_token')) {
         console.log('[RootLayout] OAuth callback detected');
-        // 少し待ってからセッションを確認
         setTimeout(async () => {
           const { data } = await supabase.auth.getSession();
-          console.log('[RootLayout] After OAuth - Session check:', !!data.session);
           if (data.session) {
-            console.log('[RootLayout] Session established, navigating to home');
-            router.replace('/home');
+            hasNavigated.current = false; // OAuth後は再ナビゲート許可
+            navigate('/home');
           }
         }, 500);
       }
     };
 
-    // 初期 URL
     Linking.getInitialURL().then((url) => {
       if (url) handleDeepLink(url);
     });
 
-    // リアルタイム URL リスナー
-    const subscription = Linking.addEventListener('url', ({ url }) => {
-      handleDeepLink(url);
-    });
+    const sub = Linking.addEventListener('url', ({ url }) => handleDeepLink(url));
+    return () => sub.remove();
+  }, []);
 
-    return () => subscription.remove();
-  }, [router]);
-
+  // 認証セッション確認
   useEffect(() => {
-    // 認証状態の監視
-    const subscription = onAuthStateChange((event, session) => {
-      console.log('[RootLayout] Auth event:', event, 'hasSession:', !!session);
-      
-      if (event === 'INITIAL_SESSION') {
-        setIsLoaded(true);
-        if (session) {
-          setIsSignedIn(true);
-          router.replace('/home');
-        }
-      }
+    let isActive = true;
 
-      if (event === 'SIGNED_IN') {
-        console.log('[RootLayout] SIGNED_IN, navigating to home');
-        setIsSignedIn(true);
-        router.replace('/home');
-      }
-
-      if (event === 'SIGNED_OUT') {
-        console.log('[RootLayout] SIGNED_OUT, navigating to login');
-        setIsSignedIn(false);
-        router.replace('/login');
+    // まず getSession で即座に確認
+    supabase.auth.getSession().then(({ data }) => {
+      if (!isActive) return;
+      console.log('[RootLayout] getSession hasSession:', !!data.session);
+      if (data.session) {
+        navigate('/home');
+      } else {
+        navigate('/login');
       }
     });
 
-    return () => subscription?.unsubscribe?.();
-  }, [router]);
+    // onAuthStateChange も監視
+    const sub = onAuthStateChange((event, session) => {
+      console.log('[RootLayout] Auth event:', event, 'hasSession:', !!session);
+      if (!isActive) return;
 
-  // 初期ロード中はスプラッシュを表示
+      if (event === 'INITIAL_SESSION') {
+        if (session) navigate('/home');
+        else navigate('/login');
+      }
+      if (event === 'SIGNED_IN') {
+        hasNavigated.current = false;
+        navigate('/home');
+      }
+      if (event === 'SIGNED_OUT') {
+        hasNavigated.current = false;
+        navigate('/login');
+      }
+    });
+
+    // 5秒経っても何も起きなければ login へ（フォールバック）
+    const timeout = setTimeout(() => {
+      if (!isActive) return;
+      console.log('[RootLayout] Timeout fallback → login');
+      navigate('/login');
+    }, 5000);
+
+    return () => {
+      isActive = false;
+      clearTimeout(timeout);
+      sub?.unsubscribe?.();
+    };
+  }, []);
+
   if (!isLoaded) {
-    return null;
+    return (
+      <View style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return <Slot />;
